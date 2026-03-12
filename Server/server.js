@@ -130,13 +130,8 @@ app.post("/generate", (req, res) => {
 
 });
 
-/* ---------- Serve React Build ---------- */
 
-app.use(express.static(path.join(__dirname, "../client/dist")));
 
-app.use((req, res) => {
-  res.sendFile(path.join(__dirname, "../client/dist/index.html"));
-});
 
 /* ---------- Start Server ---------- */
 
