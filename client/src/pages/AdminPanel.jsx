@@ -43,7 +43,7 @@ function AdminPanel() {
   const deleteUser = async (id) => {
     if (!window.confirm("Delete this user?")) return;
     try {
-      await axios.delete(`http://localhost:5000/users/${id}`);
+      await axios.delete(`https://timetablegenerator-1-znsh.onrender.com/${id}`);
       fetchUsers();
     } catch (err) {
       console.log(err);
