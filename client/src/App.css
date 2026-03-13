@@ -235,3 +235,16 @@ td[colspan="2"] { background: rgba(99, 102, 241, 0.15); border: 2px solid rgba(9
 .pdf-mode .lab-cell { background: #e9d5ff !important; }
 .pdf-mode .nss-cell { background: #fed7aa !important; }
 .pdf-mode .vertical-text, .pdf-mode .strip-time { color: black !important; }
+
+/* --- MOBILE RESPONSIVENESS --- */
+@media (max-width: 768px) {
+    .app-container { padding: 20px 10px; }
+    .card { grid-template-columns: 1fr; gap: 20px; padding: 20px; }
+    .num-inputs-grid { flex-direction: column; gap: 10px; }
+    .main-title { font-size: 1.5rem; }
+    .slot-config-grid { grid-template-columns: 1fr; gap: 8px; }
+    .table-container { padding-bottom: 10px; }
+    .timetable { min-width: 800px; } /* Ensures scrolling is activated smoothly */
+    .timetable th, .timetable td { padding: 8px 4px; font-size: 0.85rem; }
+    .login-card { padding: 25px 20px; }
+}

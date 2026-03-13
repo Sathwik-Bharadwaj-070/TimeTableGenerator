@@ -25,8 +25,11 @@ function TimetableGenerator() {
   useEffect(() => {
     const subList = subjectInput.split(",").map(s => s.trim()).filter(s => s.length > 1);
     setTeachers(prev => {
-      const updated = { ...prev };
-      subList.forEach(s => { if (!(s in updated)) updated[s] = ""; });
+      // Create a fresh dictionary that strictly only contains subjects currently in the input
+      const updated = {};
+      subList.forEach(s => { 
+        updated[s] = prev[s] || ""; // Keep old teacher name if it exists, else blank
+      });
       return updated;
     });
   }, [subjectInput]);

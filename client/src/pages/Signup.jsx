@@ -37,10 +37,9 @@ try {
 
 } catch (err) {
   console.error(err);
-  alert("Signup failed");
+  const errorMsg = err.response?.data?.message || "Signup failed";
+  alert(errorMsg);
 }
-
-
 };
 
 return ( <div className="login-page"> <div className="login-card fade-in"> <h1 className="login-title">Create Account</h1>
