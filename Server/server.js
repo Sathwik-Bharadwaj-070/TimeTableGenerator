@@ -10,7 +10,12 @@ const { buildTimetable } = require("./timetable");
 
 const app = express();
 
-app.use(cors());
+const cors = require(cors());
+app.use(cors({
+  origin:["http://localhost:5173",
+    "https://time-table-generator-nu.vercel.app/"
+  ]
+}));
 app.use(express.json());
 
 /* ---------- MongoDB Connection ---------- */
