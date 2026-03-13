@@ -219,7 +219,7 @@ res.status(500).json({ message: "Timetable generation failed" });
 app.use(express.static(path.join(__dirname, "../client/dist")));
 
 // For any route not matching an API request, send back the React index.html
-app.get("/(.*)", (req, res) => {
+app.get(/.*/, (req, res) => {
   res.sendFile(path.join(__dirname, "../client/dist/index.html"));
 });
 
