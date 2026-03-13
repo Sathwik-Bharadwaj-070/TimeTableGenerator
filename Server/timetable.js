@@ -45,19 +45,25 @@ function buildTimetable(subjects, days, slots) {
 
       }
 
-      // lab / NSS double slot
-      if (
-        subject.toLowerCase().includes("lab") ||
-        subject.toLowerCase().includes("nss")
-      ) {
+      let isDoubleSlot = subject.toLowerCase().includes("lab") || subject.toLowerCase().includes("nss");
+
+      // PREVENT CSS GRID BREAKING:
+      // Slots 1 and 3 cross the Break (1-2) and Lunch (3-4) periods.
+      // We must not start a double slot here, or else colspan crosses the vertical rowspan column.
+      if (isDoubleSlot && (s === 1 || s === 3 || s + 1 >= slots)) {
+        let singles = subjects.filter(x => !(x.toLowerCase().includes("lab") || x.toLowerCase().includes("nss")));
+        if (singles.length > 0) {
+          subject = singles[Random.randint(0, singles.length - 1)];
+        }
+        isDoubleSlot = false; // Even if no single slot exists, force single slot to preserve UI
+      }
+
+      if (isDoubleSlot) {
 
         row.push(subject);
-
-        if (s + 1 < slots) {
-          row.push("SKIP");
-          s++;
-        }
-
+        row.push("SKIP");
+        s++;
+        
         continue;
       }
 
