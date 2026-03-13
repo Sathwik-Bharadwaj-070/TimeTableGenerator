@@ -3,18 +3,23 @@ const cors = require("cors");
 const mongoose = require("mongoose");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
-const path = require("path");
 require("dotenv").config();
 
 const { buildTimetable } = require("./timetable");
 
 const app = express();
 
+/* ---------- CORS ---------- */
+
 app.use(cors({
-  origin:["http://localhost:5173",
-    "https://time-table-generator-nu.vercel.app/"
-  ]
+origin: [
+"http://localhost:5173",
+"https://time-table-generator-nu.vercel.app"
+],
+methods: ["GET", "POST", "PUT", "DELETE"],
+credentials: true
 }));
+
 app.use(express.json());
 
 /* ---------- MongoDB Connection ---------- */
@@ -26,13 +31,13 @@ mongoose.connect(process.env.MONGO_URI)
 /* ---------- User Model ---------- */
 
 const UserSchema = new mongoose.Schema({
-  username: String,
-  email: String,
-  password: String,
-  role: {
-    type: String,
-    default: "user"
-  }
+username: String,
+email: String,
+password: String,
+role: {
+type: String,
+default: "user"
+}
 });
 
 const User = mongoose.model("User", UserSchema);
@@ -41,25 +46,38 @@ const User = mongoose.model("User", UserSchema);
 
 app.post("/signup", async (req, res) => {
 
-  const { username, email, password } = req.body;
+const { username, email, password } = req.body;
 
-  try {
+try {
 
-    const hashedPassword = await bcrypt.hash(password, 10);
+```
+const existingUser = await User.findOne({ email });
 
-    const user = new User({
-      username,
-      email,
-      password: hashedPassword
-    });
+if (existingUser) {
+  return res.status(400).json({ message: "User already exists" });
+}
 
-    await user.save();
+const hashedPassword = await bcrypt.hash(password, 10);
 
-    res.json({ message: "User Registered" });
+const user = new User({
+  username,
+  email,
+  password: hashedPassword
+});
 
-  } catch (err) {
-    res.status(500).json({ message: "Signup failed" });
-  }
+await user.save();
+
+res.json({ message: "User Registered Successfully" });
+```
+
+} catch (err) {
+
+```
+console.error(err);
+res.status(500).json({ message: "Signup failed" });
+```
+
+}
 
 });
 
@@ -67,48 +85,91 @@ app.post("/signup", async (req, res) => {
 
 app.post("/login", async (req, res) => {
 
-  const { email, password } = req.body;
+const { email, password } = req.body;
 
-  const user = await User.findOne({ email });
+try {
 
-  if (!user) {
-    return res.json({ message: "User not found" });
-  }
+```
+const user = await User.findOne({ email });
 
-  const match = await bcrypt.compare(password, user.password);
+if (!user) {
+  return res.status(404).json({ message: "User not found" });
+}
 
-  if (!match) {
-    return res.json({ message: "Wrong password" });
-  }
+const match = await bcrypt.compare(password, user.password);
 
-  const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET || "secretkey");
+if (!match) {
+  return res.status(401).json({ message: "Wrong password" });
+}
 
-  res.json({
-    token,
-    role: user.role
-  });
+const token = jwt.sign(
+  { id: user._id },
+  process.env.JWT_SECRET || "secretkey",
+  { expiresIn: "1d" }
+);
+
+res.json({
+  token,
+  role: user.role
+});
+```
+
+} catch (err) {
+
+```
+console.error(err);
+res.status(500).json({ message: "Login failed" });
+```
+
+}
 
 });
 
 /* ---------- Admin Users ---------- */
 
 app.get("/users", async (req, res) => {
-  const users = await User.find();
-  res.json(users);
+
+try {
+
+```
+const users = await User.find();
+res.json(users);
+```
+
+} catch (err) {
+
+```
+res.status(500).json({ message: "Error fetching users" });
+```
+
+}
+
 });
 
 /* ---------- Update User ---------- */
 
 app.put("/users/:id", async (req, res) => {
 
-  const { username, email } = req.body;
+const { username, email } = req.body;
 
-  await User.findByIdAndUpdate(
-    req.params.id,
-    { username, email }
-  );
+try {
 
-  res.json({ message: "User updated" });
+```
+await User.findByIdAndUpdate(
+  req.params.id,
+  { username, email }
+);
+
+res.json({ message: "User updated" });
+```
+
+} catch (err) {
+
+```
+res.status(500).json({ message: "Update failed" });
+```
+
+}
 
 });
 
@@ -116,9 +177,21 @@ app.put("/users/:id", async (req, res) => {
 
 app.delete("/users/:id", async (req, res) => {
 
-  await User.findByIdAndDelete(req.params.id);
+try {
 
-  res.json({ message: "User deleted" });
+```
+await User.findByIdAndDelete(req.params.id);
+
+res.json({ message: "User deleted" });
+```
+
+} catch (err) {
+
+```
+res.status(500).json({ message: "Delete failed" });
+```
+
+}
 
 });
 
@@ -126,21 +199,30 @@ app.delete("/users/:id", async (req, res) => {
 
 app.post("/generate", (req, res) => {
 
-  const { subjects, days, slots } = req.body;
+try {
 
-  const matrix = buildTimetable(subjects, days, slots);
+```
+const { subjects, days, slots } = req.body;
 
-  res.json({ matrix });
+const matrix = buildTimetable(subjects, days, slots);
+
+res.json({ matrix });
+```
+
+} catch (err) {
+
+```
+res.status(500).json({ message: "Timetable generation failed" });
+```
+
+}
 
 });
-
-
-
 
 /* ---------- Start Server ---------- */
 
 const PORT = process.env.PORT || 5000;
 
 app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
+console.log(`Server running on port ${PORT}`);
 });
