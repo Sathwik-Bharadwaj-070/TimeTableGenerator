@@ -1,4 +1,5 @@
 const express = require("express");
+const path = require("path");
 const mongoose = require("mongoose");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
@@ -211,6 +212,15 @@ res.status(500).json({ message: "Timetable generation failed" });
 
 }
 
+});
+
+/* ---------- Serve Static React Built Files ---------- */
+// In production, the client app is built into the ../client/dist folder
+app.use(express.static(path.join(__dirname, "../client/dist")));
+
+// For any route not matching an API request, send back the React index.html
+app.get("*", (req, res) => {
+  res.sendFile(path.join(__dirname, "../client/dist/index.html"));
 });
 
 /* ---------- Start Server ---------- */
