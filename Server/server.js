@@ -40,38 +40,38 @@ const User = mongoose.model("User", UserSchema);
 
 app.post("/signup", async (req, res) => {
 
-const { username, email, password } = req.body;
+  try {
 
-try {
+    const { username, email, password } = req.body;
 
+    if (!username || !email || !password) {
+      return res.status(400).json({ message: "All fields required" });
+    }
 
-const existingUser = await User.findOne({ email });
+    const existingUser = await User.findOne({ email });
 
-if (existingUser) {
-  return res.status(400).json({ message: "User already exists" });
-}
+    if (existingUser) {
+      return res.status(400).json({ message: "User already exists" });
+    }
 
-const hashedPassword = await bcrypt.hash(password, 10);
+    const hashedPassword = await bcrypt.hash(password, 10);
 
-const user = new User({
-  username,
-  email,
-  password: hashedPassword
-});
+    const user = new User({
+      username,
+      email,
+      password: hashedPassword
+    });
 
-await user.save();
+    await user.save();
 
-res.json({ message: "User Registered Successfully" });
+    res.json({ message: "User registered successfully" });
 
+  } catch (err) {
 
-} catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Signup failed" });
 
-
-console.error(err);
-res.status(500).json({ message: "Signup failed" });
-
-
-}
+  }
 
 });
 
