@@ -16,7 +16,13 @@ function Login() {
       const res = await axios.post("https://timetablegenerator-1-znsh.onrender.com/login", {
         email,
         password
-      });
+      },
+      {
+      headers:{
+        "Content-Type":"application/json"
+      }
+    }
+    );
 
       localStorage.setItem("token", res.data.token);
       navigate("/timetable");

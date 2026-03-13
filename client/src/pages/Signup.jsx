@@ -17,7 +17,12 @@ function Signup() {
         username,
         email,
         password
-      });
+      },
+       {
+      headers:{
+        "Content-Type":"application/json"
+      }
+    });
       alert("Signup successful");
       navigate("/");
     } catch (err) {
