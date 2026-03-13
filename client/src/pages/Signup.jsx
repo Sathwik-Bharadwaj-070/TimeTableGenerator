@@ -13,7 +13,7 @@ function Signup() {
   const handleSignup = async (e) => {
     e.preventDefault();
     try {
-      await axios.post("https://timetablegenerator-1-znsh.onrender.com/", {
+      await axios.post("https://timetablegenerator-1-znsh.onrender.com/signup", {
         username,
         email,
         password
