@@ -62,7 +62,9 @@ function buildTimetable(subjects, days, slots) {
       if (subjectIsNSS && s < 4) {
         let singles = subjects.filter(x => !isNSS(x) && !isLabOrNSS(x));
         subject = singles[Random.randint(0, singles.length - 1)];
+        // CRITICAL BUGFIX: Update all flags so it behaves strictly like a single subject
         subjectIsDouble = false;
+        subjectIsNSS = false;
       }
 
       // Pre-existing Rule: Prevent double-slots from crossing Break (1) or Lunch (3) or end of day
@@ -72,6 +74,7 @@ function buildTimetable(subjects, days, slots) {
           subject = singles[Random.randint(0, singles.length - 1)];
         }
         subjectIsDouble = false;
+        subjectIsNSS = false;
       }
 
       // Prevent horizontal duplicates
@@ -79,6 +82,7 @@ function buildTimetable(subjects, days, slots) {
         let alternatives = subjects.filter(x => x !== subject && !isLabOrNSS(x));
         if (alternatives.length > 0) subject = alternatives[Random.randint(0, alternatives.length - 1)];
         subjectIsDouble = false;
+        subjectIsNSS = false;
       }
 
       // Prevent vertical duplicates
@@ -86,6 +90,7 @@ function buildTimetable(subjects, days, slots) {
         let alternatives = subjects.filter(x => x !== subject && !isLabOrNSS(x));
         if (alternatives.length > 0) subject = alternatives[Random.randint(0, alternatives.length - 1)];
         subjectIsDouble = false;
+        subjectIsNSS = false;
       }
 
       // Place subject
