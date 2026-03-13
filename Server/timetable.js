@@ -1,73 +1,70 @@
 const Random = {
-  randint: (min, max) => Math.floor(Math.random() * (max - min + 1)) + min,
+  randint: (min, max) =>
+    Math.floor(Math.random() * (max - min + 1)) + min,
 
   shuffle: (array) => {
-    for (let i = array.length - 1; i > 0; i--) {
+    let arr = [...array];
+    for (let i = arr.length - 1; i > 0; i--) {
       const j = Math.floor(Math.random() * (i + 1));
-      [array[i], array[j]] = [array[j], array[i]];
+      [arr[i], arr[j]] = [arr[j], arr[i]];
     }
-    return array;
+    return arr;
   }
 };
 
 function buildTimetable(subjects, days, slots) {
 
   let matrix = [];
-  let existingRows = new Set();
 
   for (let d = 0; d < days; d++) {
 
     let row = [];
-    let isValidRow = false;
-    let attempts = 0;
+    let pool = Random.shuffle([...subjects]);
 
-    while (!isValidRow && attempts < 100) {
+    for (let s = 0; s < slots; s++) {
 
-      row = [];
-      let pool = [];
+      if (pool.length === 0) {
+        pool = Random.shuffle([...subjects]);
+      }
 
-      for (let s = 0; s < slots; s++) {
+      let subject = pool.shift();
 
-        if (s === 3) {
-          row.push("Lunch Break");
-          continue;
-        }
+      // prevent horizontal duplicates
+      if (s > 0 && subject === row[s - 1]) {
 
-        if (pool.length === 0) {
-          pool = [...subjects];
-          Random.shuffle(pool);
-        }
+        const swapIndex = Random.randint(0, subjects.length - 1);
+        subject = subjects[swapIndex];
 
-        let subject = pool.shift();
+      }
 
-        const isDuplicateHorizontal =
-          s > 0 && subject === row[s - 1];
+      // prevent vertical duplicates
+      if (d > 0 && subject === matrix[d - 1]?.[s]) {
 
-        const isDuplicateVertical =
-          d > 0 && subject === matrix[d - 1]?.[s];
+        const swapIndex = Random.randint(0, subjects.length - 1);
+        subject = subjects[swapIndex];
 
-        if ((isDuplicateHorizontal || isDuplicateVertical) && pool.length > 0) {
+      }
 
-          const swapIdx = Random.randint(0, pool.length - 1);
-
-          const temp = subject;
-          subject = pool[swapIdx];
-          pool[swapIdx] = temp;
-        }
+      // lab / NSS double slot
+      if (
+        subject.toLowerCase().includes("lab") ||
+        subject.toLowerCase().includes("nss")
+      ) {
 
         row.push(subject);
+
+        if (s + 1 < slots) {
+          row.push("SKIP");
+          s++;
+        }
+
+        continue;
       }
 
-      let rowString = row.join("|");
-
-      if (!existingRows.has(rowString)) {
-        existingRows.add(rowString);
-        matrix.push(row);
-        isValidRow = true;
-      }
-
-      attempts++;
+      row.push(subject);
     }
+
+    matrix.push(row);
   }
 
   return matrix;
