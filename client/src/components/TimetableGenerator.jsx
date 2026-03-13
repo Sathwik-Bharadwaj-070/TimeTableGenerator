@@ -45,42 +45,41 @@ function TimetableGenerator() {
   };
 
   const generateGlobalSchedule = async () => {
+    const subjects = Object.keys(teachers);
 
-  const subjects = Object.keys(teachers);
+    try {
+      const API_URL = import.meta.env.MODE === 'development' ? 'http://localhost:5000' : 'https://timetablegenerator-1-znsh.onrender.com';
+      
+      const sectionsArr = Array.from(
+        { length: sectionCount },
+        (_, i) => `Section ${String.fromCharCode(65 + i)}`
+      );
 
-  try {
-    const API_URL = import.meta.env.MODE === 'development' ? 'http://localhost:5000' : 'https://timetablegenerator-1-znsh.onrender.com';
-    const res = await fetch(
-      `${API_URL}/generate`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-          subjects,
-          days: 6,
-          slots: 7
-        })
+      let globalTimetables = {};
+
+      // Generate a unique matrix for each section
+      for (const sec of sectionsArr) {
+        const res = await fetch(
+          `${API_URL}/generate`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+              subjects,
+              days: 6,
+              slots: 7
+            })
+          }
+        );
+        const data = await res.json();
+        globalTimetables[sec] = data.matrix;
       }
-    );
 
-    const data = await res.json();
+      setTimetable(globalTimetables);
 
-    const sectionsArr = Array.from(
-      { length: sectionCount },
-      (_, i) => `Section ${String.fromCharCode(65 + i)}`
-    );
-
-    let globalTimetables = {};
-
-    sectionsArr.forEach(sec => {
-      globalTimetables[sec] = data.matrix;
-    });
-
-    setTimetable(globalTimetables);
-
-  } catch (err) {
+    } catch (err) {
 
     console.error(err);
     alert("Failed to generate timetable");
