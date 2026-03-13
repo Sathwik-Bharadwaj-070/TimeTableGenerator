@@ -1,5 +1,4 @@
 const express = require("express");
-const cors = require("cors");
 const mongoose = require("mongoose");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
@@ -11,14 +10,9 @@ const app = express();
 
 /* ---------- CORS ---------- */
 
-app.use(cors({
-origin: [
-"http://localhost:5173",
-"https://time-table-generator-nu.vercel.app"
-],
-methods: ["GET", "POST", "PUT", "DELETE"],
-credentials: true
-}));
+const cors = require("cors");
+
+app.use(cors());
 
 app.use(express.json());
 
@@ -50,7 +44,7 @@ const { username, email, password } = req.body;
 
 try {
 
-```
+
 const existingUser = await User.findOne({ email });
 
 if (existingUser) {
@@ -68,14 +62,14 @@ const user = new User({
 await user.save();
 
 res.json({ message: "User Registered Successfully" });
-```
+
 
 } catch (err) {
 
-```
+
 console.error(err);
 res.status(500).json({ message: "Signup failed" });
-```
+
 
 }
 
@@ -89,7 +83,7 @@ const { email, password } = req.body;
 
 try {
 
-```
+
 const user = await User.findOne({ email });
 
 if (!user) {
@@ -112,14 +106,14 @@ res.json({
   token,
   role: user.role
 });
-```
+
 
 } catch (err) {
 
-```
+
 console.error(err);
 res.status(500).json({ message: "Login failed" });
-```
+
 
 }
 
@@ -131,16 +125,16 @@ app.get("/users", async (req, res) => {
 
 try {
 
-```
+
 const users = await User.find();
 res.json(users);
-```
+
 
 } catch (err) {
 
-```
+
 res.status(500).json({ message: "Error fetching users" });
-```
+
 
 }
 
@@ -154,20 +148,20 @@ const { username, email } = req.body;
 
 try {
 
-```
+
 await User.findByIdAndUpdate(
   req.params.id,
   { username, email }
 );
 
 res.json({ message: "User updated" });
-```
+
 
 } catch (err) {
 
-```
+
 res.status(500).json({ message: "Update failed" });
-```
+
 
 }
 
@@ -179,17 +173,17 @@ app.delete("/users/:id", async (req, res) => {
 
 try {
 
-```
+
 await User.findByIdAndDelete(req.params.id);
 
 res.json({ message: "User deleted" });
-```
+
 
 } catch (err) {
 
-```
+
 res.status(500).json({ message: "Delete failed" });
-```
+
 
 }
 
@@ -201,19 +195,19 @@ app.post("/generate", (req, res) => {
 
 try {
 
-```
+
 const { subjects, days, slots } = req.body;
 
 const matrix = buildTimetable(subjects, days, slots);
 
 res.json({ matrix });
-```
+
 
 } catch (err) {
 
-```
+
 res.status(500).json({ message: "Timetable generation failed" });
-```
+
 
 }
 
