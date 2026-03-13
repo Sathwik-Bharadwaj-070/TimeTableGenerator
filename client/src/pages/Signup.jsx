@@ -15,8 +15,9 @@ e.preventDefault();
 
 
 try {
+  const API_URL = import.meta.env.MODE === 'development' ? 'http://localhost:5000' : 'https://timetablegenerator-1-znsh.onrender.com';
   const res = await axios.post(
-    "https://timetablegenerator-1-znsh.onrender.com/signup",
+    `${API_URL}/signup`,
     {
       username,
       email,

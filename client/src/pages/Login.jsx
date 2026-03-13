@@ -14,8 +14,9 @@ e.preventDefault();
 
 
 try {
+  const API_URL = import.meta.env.MODE === 'development' ? 'http://localhost:5000' : 'https://timetablegenerator-1-znsh.onrender.com';
   const res = await axios.post(
-    "https://timetablegenerator-1-znsh.onrender.com/login",
+    `${API_URL}/login`,
     {
       email,
       password,
@@ -45,7 +46,7 @@ try {
 
 return ( <div className="login-page"> <div className="login-card fade-in"> <h1 className="login-title">User Login</h1>
 
-```
+
     <form onSubmit={handleLogin}>
       <div className="field-group">
         <label className="field-label">Email</label>

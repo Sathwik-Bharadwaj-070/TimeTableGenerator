@@ -2,6 +2,8 @@ import { useEffect, useState, useCallback } from "react";
 import axios from "axios";
 import "../App.css";
 
+const API_URL = import.meta.env.MODE === 'development' ? 'http://localhost:5000' : 'https://timetablegenerator-1-znsh.onrender.com';
+
 function AdminPanel() {
   const [users, setUsers] = useState([]);
   const [editId, setEditId] = useState(null);
@@ -10,7 +12,7 @@ function AdminPanel() {
 
   const fetchUsers = useCallback(async () => {
     try {
-      const res = await axios.get("http://localhost:5000/users");
+      const res = await axios.get(`${API_URL}/users`);
       setUsers(res.data);
     } catch (err) {
       console.log(err);
@@ -29,7 +31,7 @@ function AdminPanel() {
 
   const saveEdit = async () => {
     try {
-      await axios.put(`http://localhost:5000/users/${editId}`, {
+      await axios.put(`${API_URL}/users/${editId}`, {
         username: editUsername,
         email: editEmail
       });
@@ -43,7 +45,7 @@ function AdminPanel() {
   const deleteUser = async (id) => {
     if (!window.confirm("Delete this user?")) return;
     try {
-      await axios.delete(`https://timetablegenerator-1-znsh.onrender.com/${id}`);
+      await axios.delete(`${API_URL}/users/${id}`);
       fetchUsers();
     } catch (err) {
       console.log(err);
